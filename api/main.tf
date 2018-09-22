@@ -53,6 +53,11 @@ resource "aws_iam_role" "lambda_exec" {
 EOF
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+    role = "${aws_iam_role.lambda_exec.name}"
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
+
 module "lambda" {
   source           = "./lambda"
   api_gw_id        = "${aws_api_gateway_rest_api.eutambem_api.id}"
