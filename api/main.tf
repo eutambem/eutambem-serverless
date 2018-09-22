@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket = "terraform.eutambem"
-    key    = "terraform/terraform.tfstate"
+    key    = "state/api/terraform.tfstate"
     region = "sa-east-1"
   }
 }
@@ -10,12 +10,12 @@ provider "aws" {
   region = "${var.region}"
 }
 
-data "terraform_remote_state" "network" {
+data "terraform_remote_state" "common" {
   workspace = "default"
   backend = "s3"
   config {
     bucket = "terraform.eutambem"
-    key    = "state/network/terraform.tfstate"
+    key    = "state/common/terraform.tfstate"
     region = "sa-east-1"
   }
 }
