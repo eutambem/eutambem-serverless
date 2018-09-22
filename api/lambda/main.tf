@@ -21,8 +21,8 @@ resource "aws_lambda_function" "main" {
   s3_bucket = "eutambem-src"
   s3_key    = "v0.0.1/eutambem.zip"
 
-  handler = "index.handler"
-  runtime = "nodejs6.10"
+  handler = "lambda.handler"
+  runtime = "nodejs8.10"
 
   role = "${var.iam_role}"
 }
