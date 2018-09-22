@@ -67,7 +67,7 @@ resource "aws_api_gateway_deployment" "eutambem" {
   ]
 
   rest_api_id = "${var.api_gw_id}"
-  stage_name  = "api"
+  stage_name  = "v1"
 }
 
 resource "aws_lambda_permission" "apigw" {
