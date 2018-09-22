@@ -39,6 +39,16 @@ resource "aws_api_gateway_domain_name" "api_domain_name" {
   certificate_arn = "${data.terraform_remote_state.common.certificate_arn}"
 }
 
+locals {
+  stage_name = "v1"
+}
+
+resource "aws_api_gateway_base_path_mapping" "domain_mapping" {
+  api_id      = "${aws_api_gateway_rest_api.eutambem_api.id}"
+  domain_name = "${aws_api_gateway_domain_name.api_domain_name.domain_name}"
+  stage_name  = "${local.stage_name}"
+}
+
 resource "aws_route53_record" "api_record" {
   zone_id = "${data.terraform_remote_state.common.zone_id}"
   name = "${aws_api_gateway_domain_name.api_domain_name.domain_name}"
@@ -55,6 +65,7 @@ module "lambda" {
   source           = "./lambda"
   api_gw_id        = "${aws_api_gateway_rest_api.eutambem_api.id}"
   api_gw_parent_id = "${aws_api_gateway_rest_api.eutambem_api.root_resource_id}"
+  stage_name       = "${local.stage_name}"
 }
 
 output "base_url" {

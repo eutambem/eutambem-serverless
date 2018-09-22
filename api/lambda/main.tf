@@ -1,5 +1,6 @@
 variable "api_gw_id" {}
 variable "api_gw_parent_id" {}
+variable "stage_name" {}
 
 resource "aws_iam_role" "lambda_exec" {
   name = "iam-role-eutambem-lambda-${terraform.workspace}"
@@ -67,7 +68,7 @@ resource "aws_api_gateway_deployment" "eutambem" {
   ]
 
   rest_api_id = "${var.api_gw_id}"
-  stage_name  = "v1"
+  stage_name  = "${var.stage_name}"
 }
 
 resource "aws_lambda_permission" "apigw" {
