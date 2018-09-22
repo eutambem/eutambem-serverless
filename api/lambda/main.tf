@@ -1,6 +1,30 @@
 variable "api_gw_id" {}
 variable "api_gw_parent_id" {}
-variable "iam_role" {}
+
+resource "aws_iam_role" "lambda_exec" {
+  name = "iam-role-eutambem-lambda-${terraform.workspace}"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "lambda.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
+    role = "${aws_iam_role.lambda_exec.name}"
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
+}
 
 resource "aws_api_gateway_resource" "main" {
   rest_api_id = "${var.api_gw_id}"
@@ -16,7 +40,7 @@ resource "aws_api_gateway_method" "main" {
 }
 
 resource "aws_lambda_function" "main" {
-  function_name = "main-${terraform.workspace}"
+  function_name = "eutambem-lambda-${terraform.workspace}"
 
   s3_bucket = "eutambem-src"
   s3_key    = "v0.0.1/eutambem.zip"
@@ -24,7 +48,7 @@ resource "aws_lambda_function" "main" {
   handler = "lambda.handler"
   runtime = "nodejs8.10"
 
-  role = "${var.iam_role}"
+  role = "${aws_iam_role.lambda_exec.arn}"
 }
 
 resource "aws_api_gateway_integration" "main" {
