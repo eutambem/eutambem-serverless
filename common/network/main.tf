@@ -1,22 +1,4 @@
-terraform {
-  backend "s3" {
-    bucket = "terraform.eutambem"
-    key    = "state/network/terraform.tfstate"
-    region = "sa-east-1"
-  }
-}
-
-variable "region" {
-  default = "us-east-1"
-}
-
-variable "availability_zone" {
-  default = "us-east-1a"
-}
-
-provider "aws" {
-  region = "${var.region}"
-}
+variable "region" {}
 
 resource "aws_vpc" "vpc" {
   cidr_block = "10.0.0.0/16"
