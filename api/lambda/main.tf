@@ -27,6 +27,11 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_vpc" {
+    role = "${aws_iam_role.lambda_exec.name}"
+    policy_arn = "arn:aws:iam::aws:policy/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_api_gateway_resource" "main" {
   rest_api_id = "${var.api_gw_id}"
   parent_id   = "${var.api_gw_parent_id}"

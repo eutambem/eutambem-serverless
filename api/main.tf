@@ -24,10 +24,6 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "availability_zone" {
-  default = "us-east-1a"
-}
-
 resource "aws_api_gateway_rest_api" "eutambem_api" {
   name        = "eutambem-api-${terraform.workspace}"
   description = "API for Eu Tambem - ${terraform.workspace}"
@@ -66,6 +62,23 @@ module "lambda" {
   api_gw_id        = "${aws_api_gateway_rest_api.eutambem_api.id}"
   api_gw_parent_id = "${aws_api_gateway_rest_api.eutambem_api.root_resource_id}"
   stage_name       = "${local.stage_name}"
+}
+
+resource "aws_db_subnet_group" "eutambem_db_subnet" {
+  name       = "eutambem-db-subnet-${terraform.workspace}"
+  subnet_ids = ["${data.terraform_remote_state.common.subnets}"]
+}
+
+resource "aws_rds_cluster" "eutambem_cluster" {
+  cluster_identifier      = "eutambem-cluster-${terraform.workspace}"
+  availability_zones      = ["${var.region}a", "${var.region}b"]
+  database_name           = "eutambem"
+  master_username         = "admin"
+  master_password         = "zQ4hMn7GX3"
+  engine                  = "aurora"
+  engine_mode             = "serverless"
+  skip_final_snapshot     = true
+  db_subnet_group_name    = "${aws_db_subnet_group.eutambem_db_subnet.name}"
 }
 
 output "base_url" {
