@@ -27,8 +27,8 @@ module "dns" {
   source = "./dns"
 }
 
-output "subnet" {
-  value = "${module.network.subnet}"
+output "subnets" {
+  value = "${module.network.subnets}"
 }
 
 output "zone_id" {
