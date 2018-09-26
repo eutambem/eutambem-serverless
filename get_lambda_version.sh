@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 COMMAND="curl https://circleci.com/api/v1.1/project/github/eutambem/eutambem-backend?filter=successful"
    
