@@ -1,0 +1,56 @@
+version: 2
+jobs:
+  deploy-common:
+    docker:
+      - image: hashicorp/terraform:0.11.8
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run: 
+          name: Get latest lambda version
+          command: apk add jq && ./get_lambda_version.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - lambda_version.txt
+      - run: 
+          command: terraform init
+          working_directory: common
+      - run: 
+          command: terraform workspace select default
+          working_directory: common
+      - run: 
+          command: terraform apply -auto-approve
+          working_directory: common
+  
+  deploy-api-dev:
+    docker:
+      - image: hashicorp/terraform:0.11.8
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+            at: api
+      - run: 
+          command: terraform init
+          working_directory: api
+      - run: 
+          command: terraform workspace select dev
+          working_directory: api
+      - run: 
+          command: terraform apply -auto-approve -var="lambda_version=$(cat lambda_version.txt)"
+          working_directory: api
+    
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy-common
+      - deploy-api-dev:
+          requires:
+            - deploy-common
+          filters:
+            branches:
+              only: master
+
