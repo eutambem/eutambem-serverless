@@ -51,6 +51,17 @@ resource "aws_subnet" "subnet_b" {
   }
 }
 
+resource "aws_subnet" "subnet_c" {
+  vpc_id                  = "${aws_vpc.vpc.id}"
+  cidr_block              = "10.0.1.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "${var.region}c"
+
+  tags {
+    Name = "eutambem-subnet-c"
+  }
+}
+
 resource "aws_route_table_association" "public_a" {
   subnet_id      = "${aws_subnet.subnet_a.id}"
   route_table_id = "${aws_route_table.public.id}"
@@ -61,6 +72,11 @@ resource "aws_route_table_association" "public_b" {
   route_table_id = "${aws_route_table.public.id}"
 }
 
+resource "aws_route_table_association" "public_c" {
+  subnet_id      = "${aws_subnet.subnet_c.id}"
+  route_table_id = "${aws_route_table.public.id}"
+}
+
 output "subnets" {
-  value = ["${aws_subnet.subnet_a.id}", "${aws_subnet.subnet_b.id}"]
+  value = ["${aws_subnet.subnet_a.id}", "${aws_subnet.subnet_b.id}", "${aws_subnet.subnet_c.id}"]
 }
