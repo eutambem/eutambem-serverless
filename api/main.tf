@@ -64,11 +64,8 @@ module "lambda" {
   api_gw_id        = "${aws_api_gateway_rest_api.eutambem_api.id}"
   api_gw_parent_id = "${aws_api_gateway_rest_api.eutambem_api.root_resource_id}"
   stage_name       = "${local.stage_name}"
-<<<<<<< HEAD
   subnets          = ["${data.terraform_remote_state.common.subnets}"]
-=======
   lambda_version   = "${var.lambda_version}"
->>>>>>> d21be3e62d276f71d16eab506655485e2d8f334f
 }
 
 resource "aws_db_subnet_group" "eutambem_db_subnet" {
