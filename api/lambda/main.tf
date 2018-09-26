@@ -1,6 +1,8 @@
 variable "api_gw_id" {}
 variable "api_gw_parent_id" {}
 variable "stage_name" {}
+variable "subnets" {type = "list"}
+
 
 resource "aws_iam_role" "lambda_exec" {
   name = "iam-role-eutambem-lambda-${terraform.workspace}"
@@ -23,13 +25,13 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
-    role = "${aws_iam_role.lambda_exec.name}"
+    role       = "${aws_iam_role.lambda_exec.name}"
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_vpc" {
-    role = "${aws_iam_role.lambda_exec.name}"
-    policy_arn = "arn:aws:iam::aws:policy/AWSLambdaVPCAccessExecutionRole"
+    role       = "${aws_iam_role.lambda_exec.name}"
+    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
 resource "aws_api_gateway_resource" "main" {
@@ -47,14 +49,16 @@ resource "aws_api_gateway_method" "main" {
 
 resource "aws_lambda_function" "main" {
   function_name = "eutambem-lambda-${terraform.workspace}"
+  s3_bucket     = "eutambem-src"
+  s3_key        = "v0.0.1/eutambem.zip"
+  handler       = "lambda.handler"
+  runtime       = "nodejs8.10"
+  role          = "${aws_iam_role.lambda_exec.arn}"
 
-  s3_bucket = "eutambem-src"
-  s3_key    = "v0.0.1/eutambem.zip"
-
-  handler = "lambda.handler"
-  runtime = "nodejs8.10"
-
-  role = "${aws_iam_role.lambda_exec.arn}"
+  vpc_config = {
+    subnet_ids         = ["${var.subnets}"]
+    security_group_ids = ["sg-0350e549ae7cd0caf"]
+  }
 }
 
 resource "aws_api_gateway_integration" "main" {
