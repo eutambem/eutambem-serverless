@@ -69,21 +69,9 @@ module "lambda" {
   lambda_version   = "${var.lambda_version}"
 }
 
-resource "aws_db_subnet_group" "eutambem_db_subnet" {
-  name       = "eutambem-db-subnet-${terraform.workspace}"
-  subnet_ids = ["${data.terraform_remote_state.common.subnets}"]
-  }
-
-resource "aws_rds_cluster" "eutambem_cluster" {
-  cluster_identifier      = "eutambem-cluster-${terraform.workspace}"
-  availability_zones      = ["${var.region}a", "${var.region}b", "${var.region}c"]
-  database_name           = "eutambem"
-  master_username         = "admin"
-  master_password         = "zQ4hMn7GX3"
-  engine                  = "aurora"
-  engine_mode             = "serverless"
-  skip_final_snapshot     = true
-  db_subnet_group_name    = "${aws_db_subnet_group.eutambem_db_subnet.name}"
+module "database" {
+  source          = "./database"
+  subnets         = ["${data.terraform_remote_state.common.subnets}"]
 }
 
 output "base_url" {
