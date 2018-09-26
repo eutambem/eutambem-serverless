@@ -1,4 +1,5 @@
 terraform {
+  required_version = ">= 0.11.8"
   backend "s3" {
     bucket = "terraform.eutambem"
     key    = "state/api/terraform.tfstate"
