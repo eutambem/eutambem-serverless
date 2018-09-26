@@ -6,7 +6,7 @@ RESULT=$(${COMMAND})
 
 LAST_SUCCESSFUL_UPLOAD=$(echo $RESULT | jq '[ 
   .[] | 
-  select(.workflows.job_name | contains("deploy")) |
+  select(.workflows.job_name | contains("upload")) |
   { build_num } ] | .[0].build_num '
 )
 
