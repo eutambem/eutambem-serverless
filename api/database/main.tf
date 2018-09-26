@@ -18,4 +18,7 @@ resource "aws_rds_cluster" "eutambem_cluster" {
   engine_mode             = "serverless"
   skip_final_snapshot     = true
   db_subnet_group_name    = "${aws_db_subnet_group.eutambem_db_subnet.name}"
+  scaling_configuration {
+    max_capacity          = 4
+  }
 }
