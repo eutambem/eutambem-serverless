@@ -14,12 +14,15 @@ jobs:
           paths:
             - lambda_version.txt
       - run: 
+          name: Init Terraform
           command: terraform init
           working_directory: common
       - run: 
+          name: Select default workspace
           command: terraform workspace select default
           working_directory: common
       - run: 
+          name: Apply terraform changes
           command: terraform apply -auto-approve
           working_directory: common
   
@@ -32,14 +35,20 @@ jobs:
       - attach_workspace:
             at: api
       - run: 
+          name: Init Terraform
           command: terraform init
           working_directory: api
       - run: 
+          name: Select DEV workspace
           command: terraform workspace select dev
           working_directory: api
       - run: 
+          name: Apply terraform changes
           command: terraform apply -auto-approve -var="lambda_version=$(cat lambda_version.txt)"
           working_directory: api
+      - run:
+          name: API health check
+          command: curl --fail https://api-dev.eutambem.org/health-check
     
 
 workflows:
