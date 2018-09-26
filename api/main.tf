@@ -6,6 +6,12 @@ terraform {
   }
 }
 
+variable "lambda_version" { }
+
+variable "region" {
+  default = "us-east-1"
+}
+
 provider "aws" {
   region = "${var.region}"
 }
@@ -18,10 +24,6 @@ data "terraform_remote_state" "common" {
     key    = "state/common/terraform.tfstate"
     region = "sa-east-1"
   }
-}
-
-variable "region" {
-  default = "us-east-1"
 }
 
 resource "aws_api_gateway_rest_api" "eutambem_api" {
@@ -62,6 +64,7 @@ module "lambda" {
   api_gw_id        = "${aws_api_gateway_rest_api.eutambem_api.id}"
   api_gw_parent_id = "${aws_api_gateway_rest_api.eutambem_api.root_resource_id}"
   stage_name       = "${local.stage_name}"
+  lambda_version   = "${var.lambda_version}"
 }
 
 resource "aws_db_subnet_group" "eutambem_db_subnet" {

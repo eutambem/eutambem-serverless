@@ -1,6 +1,7 @@
 variable "api_gw_id" {}
 variable "api_gw_parent_id" {}
 variable "stage_name" {}
+variable "lambda_version" {}
 
 resource "aws_iam_role" "lambda_exec" {
   name = "iam-role-eutambem-lambda-${terraform.workspace}"
@@ -49,7 +50,7 @@ resource "aws_lambda_function" "main" {
   function_name = "eutambem-lambda-${terraform.workspace}"
 
   s3_bucket = "eutambem-src"
-  s3_key    = "v0.0.1/eutambem.zip"
+  s3_key    = "${var.lambda_version}/eutambem.zip"
 
   handler = "lambda.handler"
   runtime = "nodejs8.10"
