@@ -44,12 +44,12 @@ jobs:
 
 workflows:
   version: 2
-  build-deploy:
+  deploy:
     jobs:
-      - build
-      - deploy:
+      - deploy-common
+      - deploy-api-dev:
           requires:
-            - build
+            - deploy-common
           filters:
             branches:
               only: master
