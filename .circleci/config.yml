@@ -2,14 +2,13 @@ version: 2
 jobs:
   deploy-common:
     docker:
-      - image: circleci/terraform:0.11.8
+      - image: hashicorp/terraform:0.11.8
     working_directory: ~/repo
     steps:
       - checkout
-      - run: sudo apk add curl jq
       - run: 
           name: Get latest lambda version
-          command: ./get_lambda_version.sh
+          command: apk add jq && ./get_lambda_version.sh
       - persist_to_workspace:
           root: .
           paths:
@@ -26,7 +25,7 @@ jobs:
   
   deploy-api-dev:
     docker:
-      - image: circleci/terraform:0.11.8
+      - image: hashicorp/terraform:0.11.8
     working_directory: ~/repo
     steps:
       - checkout
