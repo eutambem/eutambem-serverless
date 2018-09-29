@@ -69,11 +69,6 @@ module "lambda" {
   lambda_version   = "${var.lambda_version}"
 }
 
-module "database" {
-  source          = "./database"
-  subnets         = ["${data.terraform_remote_state.common.subnets}"]
-}
-
 output "base_url" {
   value = "${module.lambda.base_url}"
 }
