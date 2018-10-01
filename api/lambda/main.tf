@@ -1,7 +1,6 @@
 variable "api_gw_id" {}
 variable "api_gw_parent_id" {}
 variable "stage_name" {}
-variable "subnets" {type = "list"}
 variable "lambda_version" {}
 
 resource "aws_iam_role" "lambda_exec" {
@@ -56,11 +55,6 @@ resource "aws_lambda_function" "main" {
   handler       = "lambda.handler"
   runtime       = "nodejs8.10"
   role          = "${aws_iam_role.lambda_exec.arn}"
-
-  vpc_config = {
-    subnet_ids         = ["${var.subnets}"]
-    security_group_ids = ["sg-0350e549ae7cd0caf"]
-  }
 }
 
 resource "aws_api_gateway_integration" "main" {
