@@ -2,6 +2,7 @@ variable "api_gw_id" {}
 variable "api_gw_parent_id" {}
 variable "stage_name" {}
 variable "lambda_version" {}
+variable "mongodb_connection_string" {}
 
 resource "aws_iam_role" "lambda_exec" {
   name = "iam-role-eutambem-lambda-${terraform.workspace}"
@@ -55,6 +56,12 @@ resource "aws_lambda_function" "main" {
   handler       = "lambda.handler"
   runtime       = "nodejs8.10"
   role          = "${aws_iam_role.lambda_exec.arn}"
+
+  environment {
+    variables = {
+      MONGO_CONN = "${var.mongodb_connection_string}"
+    }
+  }
 }
 
 resource "aws_api_gateway_integration" "main" {

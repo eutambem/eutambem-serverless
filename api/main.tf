@@ -7,7 +7,8 @@ terraform {
   }
 }
 
-variable "lambda_version" { }
+variable "lambda_version" {}
+variable "mongodb_connection_string" {}
 
 variable "region" {
   default = "us-east-1"
@@ -66,6 +67,7 @@ module "lambda" {
   api_gw_parent_id = "${aws_api_gateway_rest_api.eutambem_api.root_resource_id}"
   stage_name       = "${local.stage_name}"
   lambda_version   = "${var.lambda_version}"
+  mongodb_connection_string = "${var.mongodb_connection_string}"
 }
 
 output "base_url" {
