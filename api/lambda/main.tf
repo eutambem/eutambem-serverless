@@ -34,6 +34,37 @@ resource "aws_iam_role_policy_attachment" "lambda_vpc" {
     policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
+resource "aws_iam_policy" "eutambem_ses" {
+  name = "EuTambemSESSendEmailFromNoReply-${terraform.workspace}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "ses:FromAddress": "no-reply@eutambem.org"
+        }
+      }
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_ses" {
+    role       = "${aws_iam_role.lambda_exec.name}"
+    policy_arn = "${aws_iam_policy.eutambem_ses.arn}"
+}
+
 resource "aws_api_gateway_resource" "main" {
   rest_api_id = "${var.api_gw_id}"
   parent_id   = "${var.api_gw_parent_id}"
@@ -60,6 +91,7 @@ resource "aws_lambda_function" "main" {
   environment {
     variables = {
       MONGO_CONN = "${var.mongodb_connection_string}"
+      EMAIL_FROM_ADDRESS = "no-reply@eutambem.org"
     }
   }
 }
