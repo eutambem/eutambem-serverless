@@ -29,9 +29,30 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_vpc" {
+resource "aws_iam_policy" "eutambem_kms" {
+  name = "EuTambemKMS-${terraform.workspace}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "VisualEditor0",
+      "Effect": "Allow",
+      "Action": [
+        "kms:Encrypt",
+        "kms:Decrypt "
+      ],
+      "Resource": "arn:aws:kms:us-east-1:236688692074:key/b60a494e-ff91-4089-a02e-00d59d6d3733"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_kms" {
     role       = "${aws_iam_role.lambda_exec.name}"
-    policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+    policy_arn = "${aws_iam_policy.eutambem_kms.arn}"
 }
 
 resource "aws_iam_policy" "eutambem_ses" {
@@ -92,6 +113,7 @@ resource "aws_lambda_function" "main" {
     variables = {
       MONGO_CONN = "${var.mongodb_connection_string}"
       EMAIL_FROM_ADDRESS = "no-reply@eutambem.org"
+      KMS_KEY_ALIAS = "alias/eutambem-backend"
     }
   }
 }
